@@ -1,0 +1,294 @@
+﻿/*==========================
+Site Name: 
+Author: Michael DeLeon
+
+
+1. CSS RESET
+2. DEFAULT STYLES
+3. HEADER
+4. MAIN NAVIGATION
+5. BREAD CRUMB
+6. MAIN CONTENT
+7. FOOTER
+8. EXTENTION STYLES
+9. COLUMNS
+10.PLUGINS
+
+==========================*/
+
+
+
+/*==========================
+1.      CSS RESET
+==========================*/
+
+*                  {margin:0px; padding:0px;}
+html               {height:100%; overflow-y:scroll;}
+table              {border-collapse:collapse; border-spacing:0;}
+fieldset,img,iframe{border:0;}
+img                {display:block;}
+h1,h2,h3,h4,h5,h6  {font-size:100%; font-weight:normal;}
+ol,ul              {list-style:none;}
+label, input[type=button], input[type=submit], button{border:none; cursor:pointer;}
+a, object, button, input:focus, select:focus   {outline:none;}
+th, td, li, img    {text-align: left;vertical-align: top;}
+
+/* HTML5 tags */
+header, section, footer,
+aside, nav, article, figure,
+video{ display: block; }
+
+html { -webkit-font-smoothing: antialiased; }
+
+/*==========================*/
+
+
+/*==========================
+2.		DEFAULT STYLES
+==========================*/
+
+body     {background:#FFF; color:#333333; font-family:Verdana,Geneva,sans-serif; font-size:12px;}
+a:link   {color:#da3737;}
+a:hover  {color:#F47B20;}
+a:visited{text-decoration: none;}
+a:focus  {text-decoration: none;}
+a:active {outline: none;}
+p        {margin-top:5px; margin-bottom:10px; line-height:16px;}
+hr       {border-top:none; border-left:none; border-right:none; border-bottom:1px solid #ccc; clear:both; line-height:0px; height:1px; margin:0px 0px 10px 0px;}
+h1 span,h2 span,h3 span,h4 span,h5 span,h6 span {display:block;}
+h1       {color:#1A75CF; font-size:21px; margin-bottom:10px;}
+h1 span  {color:#000; font-size:15px;}
+h2       {color:#666666; font-size:18px; margin-bottom:5px;}
+h2 span  {color:#000; font-size:15px;}
+h3       {color:#333333; font-size:14px; margin-bottom:5px;}
+h3 span  {color:#000; font-size:12px;}
+h4       {color:#333333; font-size:12px; margin-bottom:5px;}
+h4 span  {color:#000; font-size:12px;}
+h5       {color:#333333; font-size:12px; margin-bottom:5px;}
+h5 span  {color:#000; font-size:12px;}
+h6       {color:#0769cd; font-size:12px; margin-bottom:5px;}
+h6 span  {color:#000; font-size:12px;}
+
+#wrapper{margin:0px auto 10px auto; padding:0px 20px; width:1000px;}
+
+
+/*==========================
+3.   HEADER
+==========================*/
+
+#header{
+	
+}
+  
+/*==========================
+4.   MAIN NAVIGATION
+==========================*/
+
+#mainNav{
+	
+}
+
+/*==========================
+5.   BREAD CRUMB
+==========================*/
+
+#breadCrumb{
+	
+}
+
+/*==========================
+6.   MAIN CONTENT
+==========================*/
+
+#mainContent{
+	background:#CCCCCC;
+	width:800px;
+	height:600px;
+}
+.videoPlayerTest{
+left:50%;
+margin-left:-240px;
+margin-top:-135px;
+position:absolute;
+top:50%;}
+.videoPlayerTest{height:270px;width:480px;}
+.videoControls{margin-top:-30px;height:25px;position:absolute;width:480px;}
+	.videoBtnPlayPause{
+		cursor:pointer;
+		-moz-border-radius:6px;
+		-webkit-border-radius:6px;
+		border-radius:6px;
+		float:left;
+		display:block;
+		height:25px;
+		margin:0px 10px;
+		opacity:.7;
+		text-indent:-9999px;
+		width:65px;}
+		
+	.play{background:#1b1b1b url(../images/video/btn_pause.png) no-repeat center center;}
+	.pause{background:#1b1b1b url(../images/video/btn_play.png) no-repeat center center;}
+	
+	.videoProgressBarContainer{
+		background-color: rgba(0,0,0,0);
+		float:left;
+		height:100%;
+		position:relative;
+		width:58%;
+		selection:background:none;
+		-moz-selection:background:none;
+	}
+	.videoProgressBarContainer::selection{background:transparent;}
+	.videoProgressBarContainer::-moz-selection{background:transparent;}
+	.videoProgressBarContainer::-webkit-selection{background:transparent;}
+		
+		.videoTimer{
+			background:#1b1b1b;
+			border-radius:6px;
+			-moz-border-radius:6px;
+			-webkit-border-radius:6px;
+			color:#FFFFFF;
+			font-weight:bold;
+			margin-left:5px;
+			min-width:30px;
+			opacity:.7;
+			padding:5px;
+			position:absolute;
+			text-align:center;
+			top:-20px;
+		}
+		.videoScrubber{
+			background: url(../images/video/thumb.png) no-repeat 0px 0px;
+			display:block;
+			left:50%;
+			height:100%;
+			position:absolute;
+			width:10px;
+			z-index:10;
+			}
+		.videoProgressBar{
+			background-color:#1b1b1b;
+			display:block;
+			height:10px;
+			margin-top:7px;
+			opacity:.7;
+			position:relative;
+			width:100%;}
+			.videoProgressBar .videoProgress{
+				background-color:#cf0000;
+				display:block;
+				height:100%;
+				width:50%;}
+			
+	.videoVolumeContainer{
+		background:#1b1b1b;
+		border-radius:6px;
+		-moz-border-radius:6px;
+		-webkit-border-radius:6px;
+		border-radius:6px;
+		float:right;
+		display:block;
+		height:25px;
+		margin-right:10px;
+		opacity:.7;
+		position: relative;
+		width:95px;}
+		
+		.videoBtnMute{
+			background:transparent url(../images/video/btn_mute.png) no-repeat 0px bottom;
+			cursor:pointer;
+			display:block;
+			float:left;
+			height:20px;
+			margin:4px 0px 0px 6px;
+			text-indent:-9999px;
+			width:21px;
+		}
+		.videoBtnMute::selection{background:transparent;}
+		.videoBtnMute::-moz-selection{background:transparent;}
+		.videoBtnMute::-webkit-selection{background:transparent;}
+		.muted{background-position:0px top;}
+		.unmute{background-position:0px bottom;}
+		
+		.videoVolumeSliderContainer{
+			background:#999;
+			cursor:pointer;
+			display:block;
+			height:15px;
+			position:absolute;
+			top:5px;
+			right: 6px;
+			width:54px;	
+		}
+			.videoVolumeSlider{
+				background:transparent url(../images/video/mask_volume.png) no-repeat 0px 0px;
+				display:block;
+				height:100%;
+				width:50%;
+			}
+	.videoVolumeContainer.vertical{
+		width:30px;
+	}
+		.vertical .videoVolumeSliderContainer{
+			background:#1b1b1b;
+			border-top-right-radius:6px;
+			border-top-left-radius:6px;
+			-moz-border-top-right-radius:6px;
+			-moz-border-top-left-radius:6px;
+			-webkit-border-top-right-radius:6px;
+			-webkit-border-top-left-radius:6px;
+			height:50px;
+			margin:0px;
+			padding-top:5px;
+			padding-bottom:5px;
+			right:0px;
+			top:-55px;
+			width:30px;
+		}
+			.vertical .videoVolumeSlider{
+				background:red;
+				margin:0px auto;
+				width:20px;
+			}
+
+/*==========================
+7.   FOOTER
+==========================*/
+
+#footer{
+    color:#666;
+    clear:both;
+    font-size:10px;
+    margin-top:10px;
+}
+
+/*==========================
+8.	 EXTENTION STYLES
+==========================*/
+
+.testBorder       {border:1px solid red !important;}
+.clearBothFix 	  {clear:both;display:block;height:0px;overflow:hidden;}
+.clear			  {clear:both;}
+.fl               {float:left;}
+.fr               {float:right;}
+.bulletList       {margin-left:30px; margin-bottom:10px;}
+.bulletList li    {list-style-type:disc; margin-bottom:2px;}
+.dBlock, .show    {display:block;}
+.dNone, .hide     {display:none;}
+.imgBorder        {border:1px solid #CCCCCC;}
+.error            {color:#FF0000;}
+.imgLeft		  {float:left;margin:0px 10px 10px 0px;}
+.imgRight		  {float:right;margin:0px 0px 10px 10px;}
+.imgCenter		  {margin:0px auto;}
+       
+/*==========================
+9.	 COLUMNS
+==========================*/
+
+.column2A, .column2B{float:left;width:45%;}
+.column2A{}
+.column2B{}
+
+/*==========================
+10.   PLUGINS
+==========================*/
