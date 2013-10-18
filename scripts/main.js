@@ -30,7 +30,7 @@ $(document).ready(function() {
 	
 	
 	
-	$(".videoPlayerTest").instantVideoPlayer({
+	var api = $(".videoPlayerTest").instantVideoPlayer({
 		scrubber: true,
 		autoHideControls: true,
 		videoSource: "video/video",
@@ -41,7 +41,9 @@ $(document).ready(function() {
 		muteButton: true,
 		defaultControls: false
 		
-	});
+	}).data("video");
+	
+	api.init();
 });
 
 

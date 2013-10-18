@@ -17,44 +17,30 @@
 
 (function($){
 	$.fn.instantVideoPlayer = function(options){
-		
-		var defaults = {
-			videoClass: "",
-			controlsContainerClass: "videoControls",
-			defaultControls: false,
-			autoHideControls: false,
-			autobuffer: false,
-			poster: "",
-			videoSource: "",
-			safariType: "video/mp4",
-			firefoxType: "video/ogg",
-			chromeType: "video/webm",
-			ie9Type: "",
-			videoPlayListURL: "",
-			scrubber: true,
-			timer: false,
-			timeFollowScrubber: false,
-			volumeOriantation: "horizontal",
-			muteButton: true,
-			volumeSliderFade: false,
-			fallback: "your browser isn't cool enough to support the html5 video tag please upgrade to the lastest version of <a href='http://www.mozilla.com' title='firefox'>firefox</a> or <a href='http://www.chrome.com' title='google chrome'>google chrome</a>"
-		};
-		
-		var options = $.extend(defaults, options);
-		
+		var settings = $.extend($.fn.instantVideoPlayer.defaults, options);
+
 		return this.each(function(i){
-			document.createElement("video");
+			var methods = {
+				init : function() {
+					console.log("init");
+				},
+				show : function( ) {    },// IS
+				hide : function( ) {  },// GOOD
+				update : function( content ) {  }// !!!
+			};
+ 
+			$(this).data({"video" : methods});
 			
 			var videoContainer	= $(this);
 			var selector		= "._video" + i;
 			
 			var html5Video	 = "<video id='_video"+i+"'";
-				options.videoClass != "" ? html5Video += "class='"+options.videoClass+"'" : "";
-				options.defaultControls ? html5Video += "controls='controls'" : "";
-				options.poster != "" ? html5Video += "poster='"+options.poster+"'" : "";
-				html5Video += " autobuffer='"+options.defaultControls+"'>\n"
+				settings.videoClass != "" ? html5Video += "class='"+settings.videoClass+"'" : "";
+				settings.defaultControls ? html5Video += "controls='controls'" : "";
+				settings.poster != "" ? html5Video += "poster='"+settings.poster+"'" : "";
+				html5Video += " autobuffer='"+settings.defaultControls+"'>\n"
 							 + "	<div class='noSupport'>\n"
-							 + "		"+options.fallback+"\n"
+							 + "		"+settings.fallback+"\n"
 							 + "	</div>\n"
 							 + "</video>\n";
 				$(videoContainer).html(html5Video);
@@ -63,18 +49,18 @@
 				//then browser doesn't support the video tag and returns false
 				if(!$("video" , videoContainer)[0].canPlayType){return false;}
 				
-				if(!options.defaultControls){
-				html5Video +="<div class='"+options.controlsContainerClass + " _video" +i+"'>\n"
+				if(!settings.defaultControls){
+				html5Video +="<div class='"+settings.controlsContainerClass + " _video" +i+"'>\n"
 							 + "	<span class='videoBtnPlayPause pause'>play</span>\n"
 							 + "	<span class='videoProgressBarContainer'>\n"
-				options.timer ? html5Video += "	<span class='videoTimer'>00:00</span>\n" : "";
-				options.scrubber ? html5Video += "		<span class='videoScrubber'></span>" : "";
+				settings.timer ? html5Video += "	<span class='videoTimer'>00:00</span>\n" : "";
+				settings.scrubber ? html5Video += "		<span class='videoScrubber'></span>" : "";
 				html5Video +="		<span class='videoProgressBar'>"
 							 + "			<span class='videoProgress'></span>"
 							 + "		</span>"
 							 + "	</span>\n"
-							 + "	<span class='videoVolumeContainer "+ options.volumeOriantation +"'>\n";
-				options.muteButton ? html5Video += "	<span class='videoBtnMute unmute'>mute</span>\n" : "";
+							 + "	<span class='videoVolumeContainer "+ settings.volumeOriantation +"'>\n";
+				settings.muteButton ? html5Video += "	<span class='videoBtnMute unmute'>mute</span>\n" : "";
 				html5Video +="		<span class='videoVolumeSliderContainer'>\n"
 							 + "			<span class='videoVolumeSlider'></span>\n"
 							 + "		</span>\n"
@@ -104,19 +90,19 @@
 			$("#"+videoPlayerID).attr({"width" : videoContainer.width() , "height" : videoContainer.height()});
 
 			function checkCanPlayType(){
-				if(videoPlayer.canPlayType(options.safariType) == "probably" || videoPlayer.canPlayType(options.safariType) == "maybe"){
-					$("#"+videoPlayerID).attr("src", options.videoSource+".m4v");					
-				} else if(videoPlayer.canPlayType(options.firefoxType) == "probably" || videoPlayer.canPlayType(options.firefoxType) == "maybe"){
-					$("#"+videoPlayerID).attr("src", options.videoSource+".ogg");	
-				} else if(videoPlayer.canPlayType(options.chromeType) == "probably" || videoPlayer.canPlayType(options.chromeType) == "maybe"){
-					$("#"+videoPlayerID).attr("src", options.videoSource+".webm");	
+				if(videoPlayer.canPlayType(settings.safariType) == "probably" || videoPlayer.canPlayType(settings.safariType) == "maybe"){
+					$("#"+videoPlayerID).attr("src", settings.videoSource+".m4v");					
+				} else if(videoPlayer.canPlayType(settings.firefoxType) == "probably" || videoPlayer.canPlayType(settings.firefoxType) == "maybe"){
+					$("#"+videoPlayerID).attr("src", settings.videoSource+".ogg");	
+				} else if(videoPlayer.canPlayType(settings.chromeType) == "probably" || videoPlayer.canPlayType(settings.chromeType) == "maybe"){
+					$("#"+videoPlayerID).attr("src", settings.videoSource+".webm");	
 				} else {
 					alert("no support");
 				}
 			}
 			
 			/*======= AUTO HIDE CONTROLS */
-			if(options.autoHideControls){				
+			if(settings.autoHideControls){				
 				videoContainer.mouseenter( function(){
 					controlsContainer.fadeIn("fast");
 				}).mouseleave( function(){
@@ -127,13 +113,13 @@
 			/*======= WHEN VIDEO ENDS RESET */
 			videoPlayer.addEventListener("ended", function() {
 				window.clearInterval(progressInterval);
-				options.timer ? window.clearInterval(updateTimerUI) : "";
+				settings.timer ? window.clearInterval(updateTimerUI) : "";
 				btnPlayPause.html("play").removeClass("play").addClass("pause");
 			}, false);
 			
 			
 			/*=======TIMER CONTROLS */
-			if(options.timer){
+			if(settings.timer){
 				var timer = $(selector + " .videoTimer");
 				var timerInterval;
 				var fillerTime;
@@ -152,7 +138,7 @@
 			
 			
 			/*======= VOLUME CONTROLS */
-			if(options.volumeSliderFade){
+			if(settings.volumeSliderFade){
 				volumeSliderContainer.css("display","none");
 				
 				volumeContainer.mouseenter( function(){
@@ -162,17 +148,17 @@
 				});
 			}
 			
-			if(options.muteButton){
+			if(settings.muteButton){
 				var btnMute	= $(selector + " .videoBtnMute");
 				
 				btnMute.click(function(){
 					videoPlayer.muted = !videoPlayer.muted;
 					if(videoPlayer.muted){
 						$(this).removeClass("unmute").addClass("muted");
-						options.volumeOriantation == "vertical" ? volumeSlider.css("height" , 0 ) : volumeSlider.css("width", 0);
+						settings.volumeOriantation == "vertical" ? volumeSlider.css("height" , 0 ) : volumeSlider.css("width", 0);
 					} else {
 						$(this).removeClass("muted").addClass("unmuted");
-						options.volumeOriantation == "vertical" ? 
+						settings.volumeOriantation == "vertical" ? 
 							volumeSlider.css("height" , videoCurrentVolume * volumeSliderContainer.height() ) : 
 							volumeSlider.css("width", videoCurrentVolume * volumeSliderContainer.width());
 					}
@@ -181,7 +167,7 @@
 			volumeSliderContainer.click(function(e){
 				var sliderSizeCSS;
 				
-				if(options.volumeOriantation == "vertical"){
+				if(settings.volumeOriantation == "vertical"){
 					var sliderHeight;
 					var marginTopOffset;
 					var constrained = volumeConstraints($(this));
@@ -206,7 +192,7 @@
 				}
 				
 				function volumeConstraints(element){
-					if(options.volumeOriantation == "vertical"){
+					if(settings.volumeOriantation == "vertical"){
 						if(videoCurrentVolume < .05){
 							videoCurrentVolume = 0;
 							sliderHeight = 0;	
@@ -242,7 +228,7 @@
 			});
 			function playVideo(){
 				videoPlayer.play();
-				options.timer ? timerInterval = window.setInterval(updateTimerUI , 1000) : "";
+				settings.timer ? timerInterval = window.setInterval(updateTimerUI , 1000) : "";
 				btnPlayPause.html("pause").removeClass("pause").addClass("play");
 				
 				setupProgressBar();
@@ -260,7 +246,7 @@
 				
 				/* RESET SCRUBBER AND PROGRESS BAR WHEN VIDEO FIRST STARTS */
 				if(!progressInterval){
-					options.scrubber ? scrubber.css("left", 0) : "";
+					settings.scrubber ? scrubber.css("left", 0) : "";
 					progress.css("width", 0);
 				}
 				progressInterval = window.setInterval(updateProgressBar,100);
@@ -281,9 +267,9 @@
 			function updateProgressBar(){
 				var currentPercentage = (videoPlayer.currentTime / videoPlayer.duration) * 100;
 		
-				options.scrubber ? scrubber.css("left", currentPercentage - scrubberOffset+"%") : "";
-				if(options.timer){
-					options.timeFollowScrubber ? timer.css("left", currentPercentage + scrubberOffset+"%") : "";
+				settings.scrubber ? scrubber.css("left", currentPercentage - scrubberOffset+"%") : "";
+				if(settings.timer){
+					settings.timeFollowScrubber ? timer.css("left", currentPercentage + scrubberOffset+"%") : "";
 				}
 				progress.css("width", currentPercentage+"%");
 			}
@@ -296,5 +282,31 @@
 			}
 			
 		});
+	};
+	
+	$.fn.instantVideoPlayer.defaults = {
+		videoClass: "",
+		controlsContainerClass: "videoControls",
+		defaultControls: false,
+		autoHideControls: false,
+		autobuffer: false,
+		poster: "",
+		videoSource: "",
+		safariType: "video/mp4",
+		firefoxType: "video/ogg",
+		chromeType: "video/webm",
+		ie9Type: "",
+		videoPlayListURL: "",
+		scrubber: true,
+		timer: false,
+		timeFollowScrubber: false,
+		volumeOriantation: "horizontal",
+		muteButton: true,
+		volumeSliderFade: false,
+		fallback: "your browser isn't cool enough to support the html5 video tag please upgrade to the lastest version of <a href='http://www.mozilla.com' title='firefox'>firefox</a> or <a href='http://www.chrome.com' title='google chrome'>google chrome</a>"
+	};
+	
+	$.fn.instantVideoPlayer.play = function(){
+		
 	};
 })(jQuery);
