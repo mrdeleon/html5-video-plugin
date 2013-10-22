@@ -19,7 +19,7 @@
 	$.fn.instantVideoPlayer = function(options){
 		var settings = $.extend($.fn.instantVideoPlayer.defaults, options);
 
-		function createPlayerHTML(videoContainer, controlsClassname, i){
+		function createPlayerHTML(videoContainer, i){
 			var html5Video	 = "<video id='_video"+i+"'";
 				settings.videoClass != "" ? html5Video += "class='"+settings.videoClass+"'" : "";
 				settings.defaultControls ? html5Video += "controls='controls'" : "";
@@ -37,7 +37,7 @@
 			if(!$("video" , videoContainer)[0].canPlayType){return false;}
 			
 			if(!settings.defaultControls){
-				html5Video +="<div class='"+settings.controlsContainerClass + " _video" +i+"'>\n"
+				html5Video +="<div class='videoControls _video" +i+ "'>\n"
 							 + "	<span class='videoBtnPlayPause pause'>play</span>\n"
 							 + "	<span class='videoProgressBarContainer'>\n"
 				settings.timer ? html5Video += "	<span class='videoTimer'>00:00</span>\n" : "";
@@ -95,13 +95,12 @@
 				}
 			};
 			var videoContainer		= $(this);
-			var controlsClassname	= "_video" + i;
 			
-			createPlayerHTML(videoContainer, controlsClassname, i);
+			createPlayerHTML(videoContainer, i);
 
 			var videoPlayer 			= $("video" , videoContainer)[0];
 			var videoPlayerID 			= $("video" , videoContainer)[0].id;
-			var controlsContainer		= $(controlsClassname);
+			var controlsContainer		= $(".videoControls", videoContainer);
 			var btnPlayPause			= $(".videoBtnPlayPause", videoContainer);
 			var progressBarContainer	= $(".videoProgressBarContainer", videoContainer);
 			var progressBar 			= $(".videoProgressBar", videoContainer);
@@ -292,7 +291,6 @@
 	
 	$.fn.instantVideoPlayer.defaults = {
 		videoClass: "",
-		controlsContainerClass: "videoControls",
 		defaultControls: false,
 		autoHideControls: false,
 		autobuffer: false,
