@@ -76,9 +76,17 @@
 				mute : function(passedBtnMute) {
 					videoPlayer.muted = !videoPlayer.muted;
 					if(videoPlayer.muted){
+						if(settings.muteButton){
+							$(btnMute).removeClass("unmute").addClass("muted");
+						}
+						
 						$(passedBtnMute).removeClass("unmute").addClass("muted");
 						settings.volumeOriantation == "vertical" ? volumeSlider.css("height" , 0 ) : volumeSlider.css("width", 0);
 					} else {
+						if(settings.muteButton){
+							$(btnMute).removeClass("muted").addClass("unmuted");
+						}
+						
 						$(passedBtnMute).removeClass("muted").addClass("unmuted");
 						settings.volumeOriantation == "vertical" ? 
 							volumeSlider.css("height" , videoCurrentVolume * volumeSliderContainer.height() ) : 
