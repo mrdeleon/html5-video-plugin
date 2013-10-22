@@ -18,18 +18,20 @@
 (function($){
 	$.fn.instantVideoPlayer = function(options){
 		var settings = $.extend($.fn.instantVideoPlayer.defaults, options);
+		var videoPlayerEvents = {
+				play : function(){
+				
+				},
+				pause : function(){
+				
+				},
+				mute : function() {
+					
+				}
+			};
 
 		return this.each(function(i){
-			var methods = {
-				init : function() {
-					console.log("init");
-				},
-				show : function( ) {    },// IS
-				hide : function( ) {  },// GOOD
-				update : function( content ) {  }// !!!
-			};
- 
-			$(this).data({"video" : methods});
+			$(this).data({"video" : videoPlayerEvents});
 			
 			var videoContainer	= $(this);
 			var selector		= "._video" + i;
@@ -224,7 +226,7 @@
 			
 			/*======= PLAY AND PAUSE CONTROL */
 			btnPlayPause.click(function(){
-				videoPlayer.paused || videoPlayer.ended ? playVideo() : pauseVideo();
+				videoPlayer.paused || videoPlayer.ended ? videoPlayerEvents.play() : videoPlayerEvents.pause();
 			});
 			function playVideo(){
 				videoPlayer.play();
@@ -306,7 +308,5 @@
 		fallback: "your browser isn't cool enough to support the html5 video tag please upgrade to the lastest version of <a href='http://www.mozilla.com' title='firefox'>firefox</a> or <a href='http://www.chrome.com' title='google chrome'>google chrome</a>"
 	};
 	
-	$.fn.instantVideoPlayer.play = function(){
-		
-	};
+	
 })(jQuery);
