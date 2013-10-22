@@ -20,15 +20,17 @@
 		var settings = $.extend($.fn.instantVideoPlayer.defaults, options);
 
 		function createPlayerHTML(videoContainer, i){
-			var html5Video	 = "<video id='_video"+i+"'";
+			var html5Video = "<video id='_video"+i+"'";
 				settings.videoClass != "" ? html5Video += "class='"+settings.videoClass+"'" : "";
 				settings.defaultControls ? html5Video += "controls='controls'" : "";
 				settings.poster != "" ? html5Video += "poster='"+settings.poster+"'" : "";
-				html5Video += " autobuffer='"+settings.defaultControls+"'>\n"
-							 + "	<div class='noSupport'>\n"
-							 + "		"+settings.fallback+"\n"
-							 + "	</div>\n"
-							 + "</video>\n";
+				html5Video += " autobuffer='"+settings.defaultControls+"'"
+						 + " width='" + videoContainer.width() +"'"
+						 + " height='" + videoContainer.height() + "'>\n"
+						 + "	<div class='noSupport'>\n"
+						 + "		"+settings.fallback+"\n"
+						 + "	</div>\n"
+						 + "</video>\n";
 							 
 			$(videoContainer).html(html5Video);
 			
@@ -64,8 +66,6 @@
 					videoPlayer.play();
 					settings.timer ? timerInterval = window.setInterval(updateTimerUI , 1000) : "";
 					btnPlayPause.html("pause").removeClass("pause").addClass("play");
-					
-					setupProgressBar();
 				},
 				pause : function(){
 					videoPlayer.pause();
@@ -112,7 +112,9 @@
 			var videoCurrentVolume;
 			var scrubberOffset 			= ((scrubber.width() / progressBar.width()) * 100 ) / 2;
 			var progressInterval;
+			
 			checkCanPlayType();
+			setupProgressBar();
 			
 			/*=======TIMER CONTROLS */
 			if(settings.timer){
@@ -131,9 +133,6 @@
 					timer.html(fillerTime+time);
 				}
 			}
-			
-			// SETTING WIDTH AND HEIGHT BASE OFF OF USER SET CSS WIDTH AND HEIGHT ON THE MAIN CONTAINER
-			$("#"+videoPlayerID).attr({"width" : videoContainer.width() , "height" : videoContainer.height()});
 
 			function checkCanPlayType(){
 				if(videoPlayer.canPlayType(settings.safariType) == "probably" || videoPlayer.canPlayType(settings.safariType) == "maybe"){
@@ -145,15 +144,6 @@
 				} else {
 					alert("no support");
 				}
-			}
-			
-			/*======= AUTO HIDE CONTROLS */
-			if(settings.autoHideControls){				
-				videoContainer.mouseenter( function(){
-					controlsContainer.fadeIn("fast");
-				}).mouseleave( function(){
-					controlsContainer.fadeOut("fast");
-				});
 			}
 			
 			/*======= WHEN VIDEO ENDS RESET */
@@ -182,6 +172,7 @@
 					videoPlayerEvents.mute(this);
 				});
 			}
+			
 			volumeSliderContainer.click(function(e){
 				var sliderSizeCSS;
 				
@@ -246,18 +237,18 @@
 			
 			/*======= PROGRESS BAR CONTROLS */
 			function setupProgressBar() {
-				
 				/* RESET SCRUBBER AND PROGRESS BAR WHEN VIDEO FIRST STARTS */
 				if(!progressInterval){
 					settings.scrubber ? scrubber.css("left", 0) : "";
 					progress.css("width", 0);
 				}
 				progressInterval = window.setInterval(updateProgressBar,100);
-			}						
+			}		
+							
 			progressBar.click( function(e){
 				progressPosition(e, this);
 			});
-				/* DRAG SCRUBBER CONTROLS */
+			/* DRAG SCRUBBER CONTROLS */
 			progressBarContainer.mousedown( function(){
 				progressBarContainer.bind("mousemove", function(e){
 					progressPosition(e, this);
@@ -267,6 +258,7 @@
 			}).mouseleave( function(){
 				progressBarContainer.unbind("mousemove");
 			});
+			
 			function updateProgressBar(){
 				var currentPercentage = (videoPlayer.currentTime / videoPlayer.duration) * 100;
 		
@@ -276,6 +268,7 @@
 				}
 				progress.css("width", currentPercentage+"%");
 			}
+			
 			function progressPosition(evt, target) {
 				var clickPercentage = ((evt.pageX - $(target).offset().left) / $(target).width()) * 100;
 				var newCurrentTime  = (clickPercentage*.01) * videoPlayer.duration;
@@ -284,6 +277,14 @@
 				updateProgressBar();
 			}
 			
+			/*======= AUTO HIDE CONTROLS */
+			if(settings.autoHideControls){				
+				videoContainer.mouseenter( function(){
+					controlsContainer.fadeIn("fast");
+				}).mouseleave( function(){
+					controlsContainer.fadeOut("fast");
+				});
+			}
 			
 			$(this).data({"video" : videoPlayerEvents});
 		});
