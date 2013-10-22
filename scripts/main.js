@@ -30,7 +30,7 @@ $(document).ready(function() {
 	
 	
 	
-	var api = $(".videoPlayerTest").instantVideoPlayer({
+	$(".videoPlayerTest").instantVideoPlayer({
 		scrubber: true,
 		autoHideControls: true,
 		videoSource: "video/video",
@@ -38,12 +38,18 @@ $(document).ready(function() {
 		timer: true,
 		volumeOriantation: "vertical",
 		volumeSliderFade: true,
-		muteButton: true,
-		defaultControls: false
+		muteButton: true
 		
-	}).data("video");
+	});
 	
-	api.init();
+	var api = $("#one").data("video");
+	var api2 = $("#two").data("video");
+	console.log(api);
+	//api.play();
+	
+	$(".btnMute").click(function(){
+		api2.mute(this);
+	});
 });
 
 

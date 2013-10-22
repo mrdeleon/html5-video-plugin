@@ -18,24 +18,8 @@
 (function($){
 	$.fn.instantVideoPlayer = function(options){
 		var settings = $.extend($.fn.instantVideoPlayer.defaults, options);
-		var videoPlayerEvents = {
-				play : function(){
-				
-				},
-				pause : function(){
-				
-				},
-				mute : function() {
-					
-				}
-			};
 
-		return this.each(function(i){
-			$(this).data({"video" : videoPlayerEvents});
-			
-			var videoContainer	= $(this);
-			var selector		= "._video" + i;
-			
+		function createPlayerHTML(videoContainer, controlsClassname, i){
 			var html5Video	 = "<video id='_video"+i+"'";
 				settings.videoClass != "" ? html5Video += "class='"+settings.videoClass+"'" : "";
 				settings.defaultControls ? html5Video += "controls='controls'" : "";
@@ -45,13 +29,14 @@
 							 + "		"+settings.fallback+"\n"
 							 + "	</div>\n"
 							 + "</video>\n";
-				$(videoContainer).html(html5Video);
-				
-				//Check to see if the browser supports canPlayType method if not
-				//then browser doesn't support the video tag and returns false
-				if(!$("video" , videoContainer)[0].canPlayType){return false;}
-				
-				if(!settings.defaultControls){
+							 
+			$(videoContainer).html(html5Video);
+			
+			//Check to see if the browser supports canPlayType method if not
+			//then browser doesn't support the video tag and returns false
+			if(!$("video" , videoContainer)[0].canPlayType){return false;}
+			
+			if(!settings.defaultControls){
 				html5Video +="<div class='"+settings.controlsContainerClass + " _video" +i+"'>\n"
 							 + "	<span class='videoBtnPlayPause pause'>play</span>\n"
 							 + "	<span class='videoProgressBarContainer'>\n"
@@ -68,25 +53,77 @@
 							 + "		</span>\n"
 							 + "	</span>\n"
 							 + "</div>";
-				}
+			}
 
 			$(videoContainer).html(html5Video);
+		}
+
+		return this.each(function(i){
+			var videoPlayerEvents = {
+				play : function(){
+					videoPlayer.play();
+					settings.timer ? timerInterval = window.setInterval(updateTimerUI , 1000) : "";
+					btnPlayPause.html("pause").removeClass("pause").addClass("play");
+					
+					setupProgressBar();
+				},
+				pause : function(){
+					videoPlayer.pause();
+					btnPlayPause.html("play").removeClass("play").addClass("pause");
+					
+					window.clearTimeout(progressInterval);
+				},
+				mute : function(passedBtnMute) {
+					videoPlayer.muted = !videoPlayer.muted;
+					if(videoPlayer.muted){
+						$(passedBtnMute).removeClass("unmute").addClass("muted");
+						settings.volumeOriantation == "vertical" ? volumeSlider.css("height" , 0 ) : volumeSlider.css("width", 0);
+					} else {
+						$(passedBtnMute).removeClass("muted").addClass("unmuted");
+						settings.volumeOriantation == "vertical" ? 
+							volumeSlider.css("height" , videoCurrentVolume * volumeSliderContainer.height() ) : 
+							volumeSlider.css("width", videoCurrentVolume * volumeSliderContainer.width());
+					}
+				}
+			};
+			var videoContainer		= $(this);
+			var controlsClassname	= "_video" + i;
 			
+			createPlayerHTML(videoContainer, controlsClassname, i);
+
 			var videoPlayer 			= $("video" , videoContainer)[0];
 			var videoPlayerID 			= $("video" , videoContainer)[0].id;
-			var controlsContainer		= $(selector);
-			var btnPlayPause			= $(selector + " .videoBtnPlayPause");
-			var progressBarContainer	= $(selector + " .videoProgressBarContainer");
-			var progressBar 			= $(selector + " .videoProgressBar");
-			var progress 				= $(selector + " .videoProgress");
-			var scrubber				= $(selector + " .videoScrubber");
-			var volumeContainer			= $(selector + " .videoVolumeContainer");
-			var volumeSliderContainer	= $(selector + " .videoVolumeSliderContainer");
-			var volumeSlider			= $(selector + " .videoVolumeSlider");
+			var controlsContainer		= $(controlsClassname);
+			var btnPlayPause			= $(".videoBtnPlayPause", videoContainer);
+			var progressBarContainer	= $(".videoProgressBarContainer", videoContainer);
+			var progressBar 			= $(".videoProgressBar", videoContainer);
+			var progress 				= $(".videoProgress", videoContainer);
+			var scrubber				= $(".videoScrubber", videoContainer);
+			var volumeContainer			= $(".videoVolumeContainer", videoContainer);
+			var volumeSliderContainer	= $(".videoVolumeSliderContainer", videoContainer);
+			var volumeSlider			= $(".videoVolumeSlider", videoContainer);
 			var videoCurrentVolume;
 			var scrubberOffset 			= ((scrubber.width() / progressBar.width()) * 100 ) / 2;
 			var progressInterval;
 			checkCanPlayType();
+			
+			/*=======TIMER CONTROLS */
+			if(settings.timer){
+				var timer = $(".videoTimer", videoContainer);
+				var timerInterval;
+				var fillerTime;
+				
+				function updateTimerUI(){
+					var time = Math.round(videoPlayer.currentTime);
+					
+					if(time < 10){
+							fillerTime = "00:0";        
+					} else if(time > 9){
+							fillerTime = "00:";        
+					}
+					timer.html(fillerTime+time);
+				}
+			}
 			
 			// SETTING WIDTH AND HEIGHT BASE OFF OF USER SET CSS WIDTH AND HEIGHT ON THE MAIN CONTAINER
 			$("#"+videoPlayerID).attr({"width" : videoContainer.width() , "height" : videoContainer.height()});
@@ -120,25 +157,6 @@
 			}, false);
 			
 			
-			/*=======TIMER CONTROLS */
-			if(settings.timer){
-				var timer = $(selector + " .videoTimer");
-				var timerInterval;
-				var fillerTime;
-				
-				function updateTimerUI(){
-					var time = Math.round(videoPlayer.currentTime);
-					
-					if(time < 10){
-						fillerTime = "00:0";	
-					} else if(time > 9){
-						fillerTime = "00:";	
-					}
-					timer.html(fillerTime+time);
-				}
-			}
-			
-			
 			/*======= VOLUME CONTROLS */
 			if(settings.volumeSliderFade){
 				volumeSliderContainer.css("display","none");
@@ -151,19 +169,10 @@
 			}
 			
 			if(settings.muteButton){
-				var btnMute	= $(selector + " .videoBtnMute");
+				var btnMute	= $(".videoBtnMute", videoContainer);
 				
 				btnMute.click(function(){
-					videoPlayer.muted = !videoPlayer.muted;
-					if(videoPlayer.muted){
-						$(this).removeClass("unmute").addClass("muted");
-						settings.volumeOriantation == "vertical" ? volumeSlider.css("height" , 0 ) : volumeSlider.css("width", 0);
-					} else {
-						$(this).removeClass("muted").addClass("unmuted");
-						settings.volumeOriantation == "vertical" ? 
-							volumeSlider.css("height" , videoCurrentVolume * volumeSliderContainer.height() ) : 
-							volumeSlider.css("width", videoCurrentVolume * volumeSliderContainer.width());
-					}
+					videoPlayerEvents.mute(this);
 				});
 			}
 			volumeSliderContainer.click(function(e){
@@ -223,25 +232,10 @@
 				videoPlayer.volume = videoCurrentVolume;
 			});
 			
-			
 			/*======= PLAY AND PAUSE CONTROL */
-			btnPlayPause.click(function(){
+			btnPlayPause.click(function(){			
 				videoPlayer.paused || videoPlayer.ended ? videoPlayerEvents.play() : videoPlayerEvents.pause();
 			});
-			function playVideo(){
-				videoPlayer.play();
-				settings.timer ? timerInterval = window.setInterval(updateTimerUI , 1000) : "";
-				btnPlayPause.html("pause").removeClass("pause").addClass("play");
-				
-				setupProgressBar();
-			}
-			function pauseVideo(){
-				videoPlayer.pause();
-				btnPlayPause.html("play").removeClass("play").addClass("pause");
-				
-				window.clearTimeout(progressInterval);
-			}
-			
 			
 			/*======= PROGRESS BAR CONTROLS */
 			function setupProgressBar() {
@@ -283,6 +277,8 @@
 				updateProgressBar();
 			}
 			
+			
+			$(this).data({"video" : videoPlayerEvents});
 		});
 	};
 	
