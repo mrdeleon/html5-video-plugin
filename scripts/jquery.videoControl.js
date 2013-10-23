@@ -17,10 +17,9 @@
 
 (function($){
 	$.fn.instantVideoPlayer = function(options){
-		var settings = $.extend($.fn.instantVideoPlayer.defaults, options);
-
-		function createPlayerHTML(videoContainer, i){
-			var html5Video = "<video id='_video"+i+"'";
+		
+		function createPlayerHTML(videoContainer, settings){
+			var html5Video = "<video";
 				settings.videoClass != "" ? html5Video += "class='"+settings.videoClass+"'" : "";
 				settings.defaultControls ? html5Video += "controls='controls'" : "";
 				settings.poster != "" ? html5Video += "poster='"+settings.poster+"'" : "";
@@ -39,7 +38,7 @@
 			if(!$("video" , videoContainer)[0].canPlayType){return false;}
 			
 			if(!settings.defaultControls){
-				html5Video +="<div class='videoControls _video" +i+ "'>\n"
+				html5Video +="<div class='videoControls'>\n"
 							 + "	<span class='videoBtnPlayPause pause'>play</span>\n"
 							 + "	<span class='videoProgressBarContainer'>\n"
 				settings.timer ? html5Video += "	<span class='videoTimer'>00:00</span>\n" : "";
@@ -59,13 +58,28 @@
 
 			$(videoContainer).html(html5Video);
 		}
+		
+		function checkCanPlayType(videoPlayer, settings){
+			if(videoPlayer.canPlayType(settings.safariType) == "probably" || videoPlayer.canPlayType(settings.safariType) == "maybe"){
+				$(videoPlayer).attr("src", settings.videoSource+".m4v");					
+			} else if(videoPlayer.canPlayType(settings.firefoxType) == "probably" || videoPlayer.canPlayType(settings.firefoxType) == "maybe"){
+				$(videoPlayer).attr("src", settings.videoSource+".ogg");	
+			} else if(videoPlayer.canPlayType(settings.chromeType) == "probably" || videoPlayer.canPlayType(settings.chromeType) == "maybe"){
+				$(videoPlayer).attr("src", settings.videoSource+".webm");	
+			} else {
+				alert("no support");
+			}
+		}
 
 		return this.each(function(i){
+			var settings = $.extend({}, $.fn.instantVideoPlayer.defaults, options);
 			var videoPlayerEvents = {
 				play : function(){
 					videoPlayer.play();
 					settings.timer ? timerInterval = window.setInterval(updateTimerUI , 1000) : "";
 					btnPlayPause.html("pause").removeClass("pause").addClass("play");
+					
+					progressInterval = window.setInterval(updateProgressBar,100);
 				},
 				pause : function(){
 					videoPlayer.pause();
@@ -94,12 +108,11 @@
 					}
 				}
 			};
-			var videoContainer		= $(this);
-			
-			createPlayerHTML(videoContainer, i);
+			var videoContainer = $(this);
+
+			createPlayerHTML(videoContainer, settings);
 
 			var videoPlayer 			= $("video" , videoContainer)[0];
-			var videoPlayerID 			= $("video" , videoContainer)[0].id;
 			var controlsContainer		= $(".videoControls", videoContainer);
 			var btnPlayPause			= $(".videoBtnPlayPause", videoContainer);
 			var progressBarContainer	= $(".videoProgressBarContainer", videoContainer);
@@ -112,8 +125,8 @@
 			var videoCurrentVolume;
 			var scrubberOffset 			= ((scrubber.width() / progressBar.width()) * 100 ) / 2;
 			var progressInterval;
-			
-			checkCanPlayType();
+
+			checkCanPlayType(videoPlayer, settings);
 			setupProgressBar();
 			
 			/*=======TIMER CONTROLS */
@@ -131,18 +144,6 @@
 							fillerTime = "00:";        
 					}
 					timer.html(fillerTime+time);
-				}
-			}
-
-			function checkCanPlayType(){
-				if(videoPlayer.canPlayType(settings.safariType) == "probably" || videoPlayer.canPlayType(settings.safariType) == "maybe"){
-					$("#"+videoPlayerID).attr("src", settings.videoSource+".m4v");					
-				} else if(videoPlayer.canPlayType(settings.firefoxType) == "probably" || videoPlayer.canPlayType(settings.firefoxType) == "maybe"){
-					$("#"+videoPlayerID).attr("src", settings.videoSource+".ogg");	
-				} else if(videoPlayer.canPlayType(settings.chromeType) == "probably" || videoPlayer.canPlayType(settings.chromeType) == "maybe"){
-					$("#"+videoPlayerID).attr("src", settings.videoSource+".webm");	
-				} else {
-					alert("no support");
 				}
 			}
 			
@@ -237,12 +238,8 @@
 			
 			/*======= PROGRESS BAR CONTROLS */
 			function setupProgressBar() {
-				/* RESET SCRUBBER AND PROGRESS BAR WHEN VIDEO FIRST STARTS */
-				if(!progressInterval){
-					settings.scrubber ? scrubber.css("left", 0) : "";
-					progress.css("width", 0);
-				}
-				progressInterval = window.setInterval(updateProgressBar,100);
+				settings.scrubber ? scrubber.css("left", 0) : "";
+				progress.css("width", 0);
 			}		
 							
 			progressBar.click( function(e){
@@ -261,8 +258,8 @@
 			
 			function updateProgressBar(){
 				var currentPercentage = (videoPlayer.currentTime / videoPlayer.duration) * 100;
-		
-				settings.scrubber ? scrubber.css("left", currentPercentage - scrubberOffset+"%") : "";
+				
+				settings.scrubber ? scrubber.css("left", currentPercentage - scrubberOffset + "%") : "";
 				if(settings.timer){
 					settings.timeFollowScrubber ? timer.css("left", currentPercentage + scrubberOffset+"%") : "";
 				}
