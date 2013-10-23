@@ -100,6 +100,8 @@ h6 span  {color:#000; font-size:12px;}
 6.   MAIN CONTENT
 ==========================*/
 
+#one .videoProgressBarContainer{width:72%;}
+
 #mainContent{
 	background:#CCCCCC;
 	width:800px;

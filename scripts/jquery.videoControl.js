@@ -72,14 +72,18 @@
 		}
 
 		return this.each(function(i){
-			var settings = $.extend({}, $.fn.instantVideoPlayer.defaults, options);
-			var videoPlayerEvents = {
+			var settings 			= $.extend({}, $.fn.instantVideoPlayer.defaults, options),
+				videoContainer		= $(this),
+				videoPlayerEvents	= {
 				play : function(){
 					videoPlayer.play();
 					settings.timer ? timerInterval = window.setInterval(updateTimerUI , 1000) : "";
 					btnPlayPause.html("pause").removeClass("pause").addClass("play");
 					
 					progressInterval = window.setInterval(updateProgressBar,100);
+					
+					debug(videoPlayer);
+					
 				},
 				pause : function(){
 					videoPlayer.pause();
@@ -108,26 +112,24 @@
 					}
 				}
 			};
-			var videoContainer = $(this);
 
 			createPlayerHTML(videoContainer, settings);
 
-			var videoPlayer 			= $("video" , videoContainer)[0];
-			var controlsContainer		= $(".videoControls", videoContainer);
-			var btnPlayPause			= $(".videoBtnPlayPause", videoContainer);
-			var progressBarContainer	= $(".videoProgressBarContainer", videoContainer);
-			var progressBar 			= $(".videoProgressBar", videoContainer);
-			var progress 				= $(".videoProgress", videoContainer);
-			var scrubber				= $(".videoScrubber", videoContainer);
-			var volumeContainer			= $(".videoVolumeContainer", videoContainer);
-			var volumeSliderContainer	= $(".videoVolumeSliderContainer", videoContainer);
-			var volumeSlider			= $(".videoVolumeSlider", videoContainer);
-			var videoCurrentVolume;
-			var scrubberOffset 			= ((scrubber.width() / progressBar.width()) * 100 ) / 2;
-			var progressInterval;
+			var videoPlayer 			= $("video" , videoContainer)[0],
+				controlsContainer		= $(".videoControls", videoContainer),
+				btnPlayPause			= $(".videoBtnPlayPause", videoContainer),
+				progressBarContainer	= $(".videoProgressBarContainer", videoContainer),
+				progressBar 			= $(".videoProgressBar", videoContainer),
+				progress 				= $(".videoProgress", videoContainer),
+				scrubber				= $(".videoScrubber", videoContainer),
+				volumeContainer			= $(".videoVolumeContainer", videoContainer),
+				volumeSliderContainer	= $(".videoVolumeSliderContainer", videoContainer),
+				volumeSlider			= $(".videoVolumeSlider", videoContainer),
+				videoCurrentVolume,
+				scrubberOffset 			= ((scrubber.width() / progressBar.width()) * 100 ) / 2,
+				progressInterval;
 
 			checkCanPlayType(videoPlayer, settings);
-			setupProgressBar();
 			
 			/*=======TIMER CONTROLS */
 			if(settings.timer){
@@ -176,9 +178,9 @@
 			
 			volumeSliderContainer.click(function(e){
 				var sliderSizeCSS;
+				var sliderHeight;
 				
 				if(settings.volumeOriantation == "vertical"){
-					var sliderHeight;
 					var marginTopOffset;
 					var constrained = volumeConstraints($(this));
 					
@@ -190,7 +192,6 @@
 					}
 					sliderSizeCSS = {"height" : sliderHeight , "margin-top" : marginTopOffset};
 				} else {
-					var sliderWidth;
 					var constrained = volumeConstraints($(this));
 					
 					videoCurrentVolume = (e.pageX - $(this).offset().left) / $(this).width();
@@ -201,35 +202,35 @@
 					sliderSizeCSS = {"width" : sliderWidth};
 				}
 				
-				function volumeConstraints(element){
-					if(settings.volumeOriantation == "vertical"){
-						if(videoCurrentVolume < .05){
-							videoCurrentVolume = 0;
-							sliderHeight = 0;	
-							marginTopOffset = element.height();
-						} else if(videoCurrentVolume > .95) {
-							videoCurrentVolume = 1
-							sliderHeight = element.height();	
-							marginTopOffset = 0;
-						} else {
-							return false;	
-						}
-					} else {
-						if(videoCurrentVolume < .05){
-							videoCurrentVolume = 0;
-							sliderWidth = 0;	
-						} else if(videoCurrentVolume > .95) {
-							videoCurrentVolume = 1
-							sliderWidth = element.width();	
-						} else {
-							return false;	
-						}
-					}
-				}
-				
 				volumeSlider.css(sliderSizeCSS);
 				videoPlayer.volume = videoCurrentVolume;
 			});
+			
+			function volumeConstraints(element){
+				if(settings.volumeOriantation == "vertical"){
+					if(videoCurrentVolume < .05){
+						videoCurrentVolume = 0;
+						sliderHeight = 0;	
+						marginTopOffset = element.height();
+					} else if(videoCurrentVolume > .95) {
+						videoCurrentVolume = 1
+						sliderHeight = element.height();	
+						marginTopOffset = 0;
+					} else {
+						return false;	
+					}
+				} else {
+					if(videoCurrentVolume < .05){
+						videoCurrentVolume = 0;
+						sliderWidth = 0;	
+					} else if(videoCurrentVolume > .95) {
+						videoCurrentVolume = 1
+						sliderWidth = element.width();	
+					} else {
+						return false;	
+					}
+				}
+			}
 			
 			/*======= PLAY AND PAUSE CONTROL */
 			btnPlayPause.click(function(){			
@@ -237,10 +238,8 @@
 			});
 			
 			/*======= PROGRESS BAR CONTROLS */
-			function setupProgressBar() {
-				settings.scrubber ? scrubber.css("left", 0) : "";
-				progress.css("width", 0);
-			}		
+			settings.scrubber ? scrubber.css("left", (scrubberOffset * -1) + "%") : "";
+			progress.css("width", 0);		
 							
 			progressBar.click( function(e){
 				progressPosition(e, this);
@@ -285,6 +284,32 @@
 			
 			$(this).data({"video" : videoPlayerEvents});
 		});
+		
+		function debug(videoPlayer){
+			console.log("isPaused ", videoPlayer.paused); // boolean
+			console.log("isEnded ", videoPlayer.ended); // return true if playback has reached the end of the media
+			console.log("defaultPlaybackRate ", videoPlayer.defaultPlaybackRate);
+			console.log("isPlayed ", videoPlayer.played);
+			console.log("isPlay ", videoPlayer.play);
+			console.log("isPause ", videoPlayer.pause);
+			console.log("isMuted ", videoPlayer.muted);
+			console.log("volume ", videoPlayer.volume);
+			console.log("isSeeking ", videoPlayer.seeking);
+			console.log("isSeekable ", videoPlayer.seekable);
+			console.log("timeupdate ", videoPlayer.timeupdate);
+			console.log("volumechange ", videoPlayer.volumechange);
+			console.log("videoWidth ", videoPlayer.videoWidth);
+			console.log("videoHeight ", videoPlayer.videoHeight);
+			console.log("currentSrc ", videoPlayer.currentSrc);
+			console.log("canPlayType ", videoPlayer.canPlayType("video/mp4; codecs='avc1.42E01E, mp4a.40.2'")); //probably - maybe - ""
+			console.log("networkState ", videoPlayer.networkState); // NETWORK_EMPTY = 0 , NETWORK_IDLE = 1 , NETWORK_LOADING = 2 , NETWORK_NO_SOURCE = 3
+			console.log("readyState ", videoPlayer.readyState); // HAVE_NOTHING = 0 , HAVE_METADATA = 1 , HAVE_CURRENT_DATA = 2 , HAVE_FUTURE_DATA = 3 , HAVE_ENOUGH_DATA = 4
+			console.log("load ", videoPlayer.load);
+			console.log("buffered ", videoPlayer.buffered);
+			console.log("duration ", videoPlayer.duration);
+			console.log("currentTime ", videoPlayer.currentTime);
+			console.log("intialTime ", videoPlayer.initialTime);
+		}
 	};
 	
 	$.fn.instantVideoPlayer.defaults = {
