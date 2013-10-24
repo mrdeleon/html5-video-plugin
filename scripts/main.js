@@ -2,12 +2,13 @@ $(document).ready(function() {
 	$("#one").instantVideoPlayer({
 		scrubber: true,
 		autoHideControls: true,
-		videoSource: "video/video",
+		videoSource: "http://mirrorblender.top-ix.org/peach/bigbuckbunny_movies/big_buck_bunny_1080p_stereo",
 		timeFollowScrubber: true,
 		timer: true,
 		volumeOriantation: "vertical",
 		volumeSliderFade: true,
-		muteButton: true
+		muteButton: true,
+		preload: "auto"
 	});
 	
 	$("#two").instantVideoPlayer({

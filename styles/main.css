@@ -100,7 +100,7 @@ h6 span  {color:#000; font-size:12px;}
 6.   MAIN CONTENT
 ==========================*/
 
-#one .videoProgressBarContainer{width:72%;}
+#one .videoProgressContainer{width:72%;}
 
 #mainContent{
 	background:#CCCCCC;
@@ -131,7 +131,7 @@ top:50%;}*/
 	.play{background:#1b1b1b url(../images/video/btn_pause.png) no-repeat center center;}
 	.pause{background:#1b1b1b url(../images/video/btn_play.png) no-repeat center center;}
 	
-	.videoProgressBarContainer{
+	.videoProgressContainer{
 		background-color: rgba(0,0,0,0);
 		float:left;
 		height:100%;
@@ -140,9 +140,9 @@ top:50%;}*/
 		selection:background:none;
 		-moz-selection:background:none;
 	}
-	.videoProgressBarContainer::selection{background:transparent;}
-	.videoProgressBarContainer::-moz-selection{background:transparent;}
-	.videoProgressBarContainer::-webkit-selection{background:transparent;}
+	.videoProgressContainer::selection{background:transparent;}
+	.videoProgressContainer::-moz-selection{background:transparent;}
+	.videoProgressContainer::-webkit-selection{background:transparent;}
 		
 		.videoTimer{
 			background:#1b1b1b;
@@ -176,11 +176,20 @@ top:50%;}*/
 			opacity:.7;
 			position:relative;
 			width:100%;}
-			.videoProgressBar .videoProgress{
-				background-color:#cf0000;
+			.videoProgressBar span{
 				display:block;
 				height:100%;
-				width:50%;}
+				left:0px;
+				position:absolute;
+				width:0%;}
+			.videoProgressBar .videoProgress{
+				background-color:#cf0000;
+				z-index:10;
+			}
+			.videoProgressBar .videoBuffer{
+				background-color:#09F;
+				z-index:5;
+			}
 			
 	.videoVolumeContainer{
 		background:#1b1b1b;

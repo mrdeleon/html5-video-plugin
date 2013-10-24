@@ -23,7 +23,7 @@
 				settings.videoClass != "" ? html5Video += "class='"+settings.videoClass+"'" : "";
 				settings.defaultControls ? html5Video += "controls='controls'" : "";
 				settings.poster != "" ? html5Video += "poster='"+settings.poster+"'" : "";
-				html5Video += " autobuffer='"+settings.defaultControls+"'"
+				html5Video += " preload='"+settings.defaultControls+"'"
 						 + " width='" + videoContainer.width() +"'"
 						 + " height='" + videoContainer.height() + "'>\n"
 						 + "	<div class='noSupport'>\n"
@@ -40,11 +40,12 @@
 			if(!settings.defaultControls){
 				html5Video +="<div class='videoControls'>\n"
 							 + "	<span class='videoBtnPlayPause pause'>play</span>\n"
-							 + "	<span class='videoProgressBarContainer'>\n"
+							 + "	<span class='videoProgressContainer'>\n"
 				settings.timer ? html5Video += "	<span class='videoTimer'>00:00</span>\n" : "";
 				settings.scrubber ? html5Video += "		<span class='videoScrubber'></span>" : "";
 				html5Video +="		<span class='videoProgressBar'>"
 							 + "			<span class='videoProgress'></span>"
+							 + "			<span class='videoBuffer'></span>"
 							 + "		</span>"
 							 + "	</span>\n"
 							 + "	<span class='videoVolumeContainer "+ settings.volumeOriantation +"'>\n";
@@ -61,7 +62,7 @@
 		
 		function checkCanPlayType(videoPlayer, settings){
 			if(videoPlayer.canPlayType(settings.safariType) == "probably" || videoPlayer.canPlayType(settings.safariType) == "maybe"){
-				$(videoPlayer).attr("src", settings.videoSource+".m4v");					
+				$(videoPlayer).attr("src", settings.videoSource+".ogg");					
 			} else if(videoPlayer.canPlayType(settings.firefoxType) == "probably" || videoPlayer.canPlayType(settings.firefoxType) == "maybe"){
 				$(videoPlayer).attr("src", settings.videoSource+".ogg");	
 			} else if(videoPlayer.canPlayType(settings.chromeType) == "probably" || videoPlayer.canPlayType(settings.chromeType) == "maybe"){
@@ -81,9 +82,6 @@
 					btnPlayPause.html("pause").removeClass("pause").addClass("play");
 					
 					progressInterval = window.setInterval(updateProgressBar,100);
-					
-					debug(videoPlayer);
-					
 				},
 				pause : function(){
 					videoPlayer.pause();
@@ -118,9 +116,10 @@
 			var videoPlayer 			= $("video" , videoContainer)[0],
 				controlsContainer		= $(".videoControls", videoContainer),
 				btnPlayPause			= $(".videoBtnPlayPause", videoContainer),
-				progressBarContainer	= $(".videoProgressBarContainer", videoContainer),
+				progressContainer		= $(".videoProgressContainer", videoContainer),
 				progressBar 			= $(".videoProgressBar", videoContainer),
 				progress 				= $(".videoProgress", videoContainer),
+				buffer	 				= $(".videoBuffer", videoContainer),
 				scrubber				= $(".videoScrubber", videoContainer),
 				volumeContainer			= $(".videoVolumeContainer", videoContainer),
 				volumeSliderContainer	= $(".videoVolumeSliderContainer", videoContainer),
@@ -238,21 +237,20 @@
 			});
 			
 			/*======= PROGRESS BAR CONTROLS */
-			settings.scrubber ? scrubber.css("left", (scrubberOffset * -1) + "%") : "";
-			progress.css("width", 0);		
+			settings.scrubber ? scrubber.css("left", (scrubberOffset * -1) + "%") : "";	
 							
 			progressBar.click( function(e){
 				progressPosition(e, this);
 			});
 			/* DRAG SCRUBBER CONTROLS */
-			progressBarContainer.mousedown( function(){
-				progressBarContainer.bind("mousemove", function(e){
+			progressContainer.mousedown( function(){
+				progressContainer.bind("mousemove", function(e){
 					progressPosition(e, this);
 				});
 			}).mouseup( function(){
-				progressBarContainer.unbind("mousemove");
+				progressContainer.unbind("mousemove");
 			}).mouseleave( function(){
-				progressBarContainer.unbind("mousemove");
+				progressContainer.unbind("mousemove");
 			});
 			
 			function updateProgressBar(){
@@ -271,6 +269,25 @@
 
 				videoPlayer.currentTime = newCurrentTime;
 				updateProgressBar();
+			}
+			
+			/*======= BUFFER PROGRESS BAR */
+			if(settings.preload === "auto"){
+				$(videoPlayer).bind("oncanplaythrough", function(){
+					console.log("sd");
+				});
+				$(videoPlayer).bind("progress", function(){
+
+					var bufferPercentage = (videoPlayer.buffered.end(0) / videoPlayer.duration) * 100;
+					buffer.css("width", bufferPercentage+"%");
+					
+					if(bufferPercentage <= 99.5){
+						buffer.css("width", bufferPercentage+"%");
+					} else {
+						buffer.css("width", "100%");
+						$(videoPlayer).unbind("progress");
+					}
+				});
 			}
 			
 			/*======= AUTO HIDE CONTROLS */
@@ -305,7 +322,7 @@
 			console.log("networkState ", videoPlayer.networkState); // NETWORK_EMPTY = 0 , NETWORK_IDLE = 1 , NETWORK_LOADING = 2 , NETWORK_NO_SOURCE = 3
 			console.log("readyState ", videoPlayer.readyState); // HAVE_NOTHING = 0 , HAVE_METADATA = 1 , HAVE_CURRENT_DATA = 2 , HAVE_FUTURE_DATA = 3 , HAVE_ENOUGH_DATA = 4
 			console.log("load ", videoPlayer.load);
-			console.log("buffered ", videoPlayer.buffered);
+			console.log("buffered ", videoPlayer.buffered.start(0), videoPlayer.buffered.end(0));
 			console.log("duration ", videoPlayer.duration);
 			console.log("currentTime ", videoPlayer.currentTime);
 			console.log("intialTime ", videoPlayer.initialTime);
@@ -316,7 +333,7 @@
 		videoClass: "",
 		defaultControls: false,
 		autoHideControls: false,
-		autobuffer: false,
+		preload: "none", // auto | metadata | none
 		poster: "",
 		videoSource: "",
 		safariType: "video/mp4",
