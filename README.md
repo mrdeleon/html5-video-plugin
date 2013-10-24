@@ -4,7 +4,7 @@ html5-video-plugin
 An HTML5 video plugin with JQuery.
 All video controls are styled with css.
 
-Currrent Parameters
+Default Parameters
 ==================
 
 videoClass: "",
