@@ -47,14 +47,15 @@ API access
 var api = $("#videoDiv").data("video");
 
 $(".btnPlay").click(function(){
-	api.play(this);
+	api.play();
 });
 
 $(".btnPause").click(function(){
-	api.pause(this);
+	api.pause();
 });
 
 $(".btnMute").click(function(){
 	api.mute(this);
+	// Need to pass "this" or your button will not get updated
 	// Currently mute is both mute and unmute. It will toggle the volume on and off
 });
