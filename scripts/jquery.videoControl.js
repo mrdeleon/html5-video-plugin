@@ -76,40 +76,40 @@
 			var settings 			= $.extend({}, $.fn.instantVideoPlayer.defaults, options),
 				videoContainer		= $(this),
 				videoPlayerEvents	= {
-				play : function(){
-					videoPlayer.play();
-					settings.timer ? timerInterval = window.setInterval(updateTimerUI , 1000) : "";
-					btnPlayPause.html("pause").removeClass("pause").addClass("play");
-					
-					progressInterval = window.setInterval(updateProgressBar,100);
-				},
-				pause : function(){
-					videoPlayer.pause();
-					btnPlayPause.html("play").removeClass("play").addClass("pause");
-					
-					window.clearTimeout(progressInterval);
-				},
-				mute : function(passedBtnMute) {
-					videoPlayer.muted = !videoPlayer.muted;
-					if(videoPlayer.muted){
-						if(settings.muteButton){
-							$(btnMute).removeClass("unmute").addClass("muted");
-						}
+					play : function(){
+						videoPlayer.play();
+						settings.timer ? timerInterval = window.setInterval(updateTimerUI , 1000) : "";
+						btnPlayPause.html("pause").removeClass("pause").addClass("play");
 						
-						$(passedBtnMute).removeClass("unmute").addClass("muted");
-						settings.volumeOriantation == "vertical" ? volumeSlider.css("height" , 0 ) : volumeSlider.css("width", 0);
-					} else {
-						if(settings.muteButton){
-							$(btnMute).removeClass("muted").addClass("unmuted");
-						}
+						progressInterval = window.setInterval(updateProgressBar,100);
+					},
+					pause : function(){
+						videoPlayer.pause();
+						btnPlayPause.html("play").removeClass("play").addClass("pause");
 						
-						$(passedBtnMute).removeClass("muted").addClass("unmuted");
-						settings.volumeOriantation == "vertical" ? 
-							volumeSlider.css("height" , videoCurrentVolume * volumeSliderContainer.height() ) : 
-							volumeSlider.css("width", videoCurrentVolume * volumeSliderContainer.width());
+						window.clearTimeout(progressInterval);
+					},
+					mute : function(passedBtnMute) {
+						videoPlayer.muted = !videoPlayer.muted;
+						if(videoPlayer.muted){
+							if(settings.muteButton){
+								$(btnMute).removeClass("unmute").addClass("muted");
+							}
+							
+							$(passedBtnMute).removeClass("unmute").addClass("muted");
+							settings.volumeOriantation == "vertical" ? volumeSlider.css("height" , 0 ) : volumeSlider.css("width", 0);
+						} else {
+							if(settings.muteButton){
+								$(btnMute).removeClass("muted").addClass("unmuted");
+							}
+							
+							$(passedBtnMute).removeClass("muted").addClass("unmuted");
+							settings.volumeOriantation == "vertical" ? 
+								volumeSlider.css("height" , videoCurrentVolume * volumeSliderContainer.height() ) : 
+								volumeSlider.css("width", videoCurrentVolume * volumeSliderContainer.width());
+						}
 					}
-				}
-			};
+				};
 
 			createPlayerHTML(videoContainer, settings);
 
@@ -261,6 +261,10 @@
 					settings.timeFollowScrubber ? timer.css("left", currentPercentage + scrubberOffset+"%") : "";
 				}
 				progress.css("width", currentPercentage+"%");
+				
+				if(insufficientBuffer()){ 
+					videoPlayerEvents.pause();
+				}
 			}
 			
 			function progressPosition(evt, target) {
@@ -272,12 +276,23 @@
 			}
 			
 			/*======= BUFFER PROGRESS BAR */
+			function insufficientBuffer(){
+				if((videoPlayer.buffered.end(0) - videoPlayer.currentTime) < 20){
+					console.log("need more buffer");
+
+					return true;
+				}
+				
+				return false;
+			}
 			if(settings.preload === "auto"){
-				$(videoPlayer).bind("oncanplaythrough", function(){
-					console.log("sd");
-				});
 				$(videoPlayer).bind("progress", function(){
 
+					if(!insufficientBuffer()){ 
+						videoPlayerEvents.play();
+					}
+					console.log(videoPlayer.buffered.end(0) - videoPlayer.currentTime);
+					
 					var bufferPercentage = (videoPlayer.buffered.end(0) / videoPlayer.duration) * 100;
 					buffer.css("width", bufferPercentage+"%");
 					
