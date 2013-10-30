@@ -6,7 +6,7 @@ All video controls are styled with css.
 
 Default Parameters
 ==================
-
+```js
 videoClass: "",
 defaultControls: false,
 autoHideControls: false,
@@ -25,10 +25,10 @@ volumeOriantation: "horizontal",
 muteButton: true,
 volumeSliderFade: false,
 fallback: "your browser isn't cool enough to support the html5 video tag please upgrade to the lastest version of <a href='http://www.mozilla.com' title='firefox'>firefox</a> or <a href='http://www.chrome.com' title='google chrome'>google chrome</a>"
-
+```
 Example Usage
 ==================
-
+```js
 $("#videoDiv").instantVideoPlayer({
 	scrubber: true,
 	autoHideControls: true,
@@ -40,10 +40,10 @@ $("#videoDiv").instantVideoPlayer({
 	muteButton: true,
 	preload: "auto"
 });
-
+```
 API access
 ==================
-
+```js
 var api = $("#videoDiv").data("video");
 
 $(".btnPlay").click(function(){
@@ -59,3 +59,4 @@ $(".btnMute").click(function(){
 	// Need to pass "this" or your button will not get updated
 	// Currently mute is both mute and unmute. It will toggle the volume on and off
 });
+```
